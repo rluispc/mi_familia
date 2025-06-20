@@ -1,74 +1,122 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Gráfica de Peso desde CSV (Netlify)</title>
+  <meta charset="UTF-8" />
+  <title>Gráfica dinámica desde CSV</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      padding: 2em;
+      font-family: Arial, sans-serif;
       background: #f0f8ff;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #0077cc;
+    }
+    #selector {
+      margin: 1rem 0;
+      text-align: center;
     }
     canvas {
-      max-width: 100%;
       background: white;
-      padding: 1em;
-      border-radius: 10px;
+      padding: 1rem;
+      border-radius: 8px;
       box-shadow: 0 0 10px #ccc;
+      max-width: 100%;
     }
   </style>
 </head>
 <body>
 
-<h1>Gráfica de Peso del Bebé</h1>
-<canvas id="pesoChart" width="600" height="300"></canvas>
+<h1>Gráfica Dinámica desde CSV</h1>
+
+<div id="selector">
+  <label for="xSelect">Eje X:</label>
+  <select id="xSelect"></select>
+  <label for="ySelect">Eje Y:</label>
+  <select id="ySelect"></select>
+</div>
+
+<canvas id="grafico" height="300"></canvas>
 
 <script>
-  const ctx = document.getElementById('pesoChart').getContext('2d');
+  let datosCSV = [];
+  let chart;
 
-  fetch('peso.csv')
+  // Leer el CSV desde el mismo directorio
+  fetch('./peso.csv')
     .then(response => response.text())
     .then(csvText => {
-      const results = Papa.parse(csvText, {
+      const parsed = Papa.parse(csvText, {
         header: true,
         dynamicTyping: true,
         skipEmptyLines: true
       });
 
-      const data = results.data;
+      datosCSV = parsed.data;
+      const columnas = Object.keys(datosCSV[0]);
 
-      const labels = data.map(row => `${row.edad_meses}m`);
-      const pesos = data.map(row => row.peso_kg);
+      // Poblar selectores dinámicamente
+      columnas.forEach(col => {
+        const optionX = document.createElement("option");
+        optionX.value = col;
+        optionX.textContent = col;
+        document.getElementById("xSelect").appendChild(optionX);
 
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Peso (kg)',
-            data: pesos,
-            borderColor: 'blue',
-            backgroundColor: 'lightblue',
-            fill: false,
-            tension: 0.3
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: false,
-              title: { display: true, text: 'Kg' }
-            },
-            x: {
-              title: { display: true, text: 'Edad (meses)' }
-            }
+        const optionY = document.createElement("option");
+        optionY.value = col;
+        optionY.textContent = col;
+        document.getElementById("ySelect").appendChild(optionY);
+      });
+
+      // Selección inicial automática
+      document.getElementById("xSelect").value = columnas[1];
+      document.getElementById("ySelect").value = columnas[2];
+
+      actualizarGrafico();
+    });
+
+  document.getElementById("xSelect").addEventListener("change", actualizarGrafico);
+  document.getElementById("ySelect").addEventListener("change", actualizarGrafico);
+
+  function actualizarGrafico() {
+    const xCol = document.getElementById("xSelect").value;
+    const yCol = document.getElementById("ySelect").value;
+
+    const xDatos = datosCSV.map(f => f[xCol]);
+    const yDatos = datosCSV.map(f => f[yCol]);
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("grafico").getContext("2d"), {
+      type: 'line',
+      data: {
+        labels: xDatos,
+        datasets: [{
+          label: `${yCol} vs ${xCol}`,
+          data: yDatos,
+          borderColor: 'blue',
+          backgroundColor: 'lightblue',
+          fill: false,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: false,
+            title: { display: true, text: yCol }
+          },
+          x: {
+            title: { display: true, text: xCol }
           }
         }
-      });
+      }
     });
+  }
 </script>
 
 </body>
