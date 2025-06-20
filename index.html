@@ -1,123 +1,104 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Gráfica dinámica desde CSV</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Seguimiento Médico Infantil</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f8ff;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f4fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #0077cc;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #e6f0fa;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #0077cc;
+      font-weight: bold;
+    }
+
+    nav button:hover, nav button.active {
+      background-color: #d0e7ff;
+    }
+
+    section {
+      display: none;
       padding: 2rem;
     }
-    h1 {
-      text-align: center;
-      color: #0077cc;
+
+    section.active {
+      display: block;
     }
-    #selector {
-      margin: 1rem 0;
-      text-align: center;
-    }
-    canvas {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #ccc;
+
+    iframe {
+      width: 100%;
       max-width: 100%;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
     }
   </style>
 </head>
 <body>
 
-<h1>Gráfica Dinámica desde CSV</h1>
+<header>
+  <h1>Seguimiento Médico Infantil</h1>
+</header>
 
-<div id="selector">
-  <label for="xSelect">Eje X:</label>
-  <select id="xSelect"></select>
-  <label for="ySelect">Eje Y:</label>
-  <select id="ySelect"></select>
-</div>
+<nav>
+  <button onclick="showTab('tabla')" class="active">Tabla</button>
+  <button onclick="showTab('grafico1')">Gráfico 1</button>
+  <button onclick="showTab('grafico2')">Gráfico 2</button>
+  <button onclick="showTab('grafico3')">Gráfico 3</button>
+</nav>
 
-<canvas id="grafico" height="300"></canvas>
+<section id="tabla" class="active">
+  <h2>Tabla de Peso</h2>
+  <iframe src="https://onedrive.live.com/embed?resid=TU_ID_TABLA&authkey=TU_CLAVE_TABLA&em=2" height="500"></iframe>
+</section>
+
+<section id="grafico1">
+  <h2>Gráfico de Peso</h2>
+  <iframe src="https://onedrive.live.com/embed?resid=TU_ID_GRAFICO1&authkey=TU_CLAVE_GRAFICO1&em=2" height="450"></iframe>
+</section>
+
+<section id="grafico2">
+  <h2>Gráfico de Talla</h2>
+  <iframe src="https://onedrive.live.com/embed?resid=TU_ID_GRAFICO2&authkey=TU_CLAVE_GRAFICO2&em=2" height="450"></iframe>
+</section>
+
+<section id="grafico3">
+  <h2>Gráfico de Perímetro Cefálico</h2>
+  <iframe src="https://onedrive.live.com/embed?resid=TU_ID_GRAFICO3&authkey=TU_CLAVE_GRAFICO3&em=2" height="450"></iframe>
+</section>
 
 <script>
-  let datosCSV = [];
-  let chart;
+  function showTab(id) {
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
 
-  // Leer el CSV desde el mismo directorio
-  fetch('./peso.csv')
-    .then(response => response.text())
-    .then(csvText => {
-      const parsed = Papa.parse(csvText, {
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true
-      });
-
-      datosCSV = parsed.data;
-      const columnas = Object.keys(datosCSV[0]);
-
-      // Poblar selectores dinámicamente
-      columnas.forEach(col => {
-        const optionX = document.createElement("option");
-        optionX.value = col;
-        optionX.textContent = col;
-        document.getElementById("xSelect").appendChild(optionX);
-
-        const optionY = document.createElement("option");
-        optionY.value = col;
-        optionY.textContent = col;
-        document.getElementById("ySelect").appendChild(optionY);
-      });
-
-      // Selección inicial automática
-      document.getElementById("xSelect").value = columnas[1];
-      document.getElementById("ySelect").value = columnas[2];
-
-      actualizarGrafico();
-    });
-
-  document.getElementById("xSelect").addEventListener("change", actualizarGrafico);
-  document.getElementById("ySelect").addEventListener("change", actualizarGrafico);
-
-  function actualizarGrafico() {
-    const xCol = document.getElementById("xSelect").value;
-    const yCol = document.getElementById("ySelect").value;
-
-    const xDatos = datosCSV.map(f => f[xCol]);
-    const yDatos = datosCSV.map(f => f[yCol]);
-
-    if (chart) chart.destroy();
-
-    chart = new Chart(document.getElementById("grafico").getContext("2d"), {
-      type: 'line',
-      data: {
-        labels: xDatos,
-        datasets: [{
-          label: `${yCol} vs ${xCol}`,
-          data: yDatos,
-          borderColor: 'blue',
-          backgroundColor: 'lightblue',
-          fill: false,
-          tension: 0.3
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: false,
-            title: { display: true, text: yCol }
-          },
-          x: {
-            title: { display: true, text: xCol }
-          }
-        }
-      }
-    });
+    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
   }
 </script>
 
 </body>
 </html>
+
