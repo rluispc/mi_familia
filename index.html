@@ -2,13 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Seguimiento Médico Infantil</title>
+  <title>Datos Biométricos</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f0f4fa;
       margin: 0;
-      padding: 0;
     }
 
     header {
@@ -34,25 +33,27 @@
       font-weight: bold;
     }
 
-    nav button:hover, nav button.active {
+    nav button.active {
       background-color: #d0e7ff;
     }
 
     section {
-      display: none;
       padding: 2rem;
     }
 
-    section.active {
-      display: block;
+    h2 {
+      color: #003366;
+      margin-top: 2rem;
     }
 
     iframe {
       width: 100%;
       max-width: 100%;
+      height: 400px;
       border: none;
       border-radius: 10px;
       box-shadow: 0 0 10px #ccc;
+      margin-bottom: 2rem;
     }
   </style>
 </head>
@@ -63,42 +64,22 @@
 </header>
 
 <nav>
-  <button onclick="showTab('tabla')" class="active">Tabla</button>
-  <button onclick="showTab('grafico1')">Gráfico 1</button>
-  <button onclick="showTab('grafico2')">Gráfico 2</button>
-  <button onclick="showTab('grafico3')">Gráfico 3</button>
+  <button class="active">Datos Biométricos</button>
 </nav>
 
-<section id="tabla" class="active">
+<section id="datos-biometricos">
   <h2>Tabla de Peso</h2>
   <iframe width="535" height="210" frameborder="0" scrolling="no" src="https://1drv.ms/x/c/4a7b5454daaf9f66/IQQkaAalRf4QSL_uK5wj9zetAXpau6-d9T7dlJmLWDvdwgg?em=2&ActiveCell='Sheet1'!B3&Item=Table1&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True"></iframe>
-</section>
 
-<section id="grafico1">
   <h2>Gráfico de Peso</h2>
   <iframe width="485" height="318" frameborder="0" scrolling="no" src="https://1drv.ms/x/c/4a7b5454daaf9f66/IQQkaAalRf4QSL_uK5wj9zetAXpau6-d9T7dlJmLWDvdwgg?em=2&Item=Chart%201&wdInConfigurator=True&wdInConfigurator=True"></iframe>
-</section>
 
-<section id="grafico2">
   <h2>Gráfico de Talla</h2>
   <iframe width="485" height="318" frameborder="0" scrolling="no" src="https://1drv.ms/x/c/4a7b5454daaf9f66/IQQkaAalRf4QSL_uK5wj9zetAXpau6-d9T7dlJmLWDvdwgg?em=2&Item=Chart%202&wdInConfigurator=True&wdInConfigurator=True"></iframe>
-</section>
 
-<section id="grafico3">
   <h2>Gráfico de Perímetro Cefálico</h2>
   <iframe width="485" height="318" frameborder="0" scrolling="no" src="https://1drv.ms/x/c/4a7b5454daaf9f66/IQQkaAalRf4QSL_uK5wj9zetAXpau6-d9T7dlJmLWDvdwgg?em=2&Item=Chart%203&wdInConfigurator=True&wdInConfigurator=True"></iframe>
 </section>
 
-<script>
-  function showTab(id) {
-    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-
-    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-  }
-</script>
-
 </body>
 </html>
-
