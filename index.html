@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gráfica de Peso desde CSV (Netlify)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 2em;
+      background: #f0f8ff;
+    }
+    canvas {
+      max-width: 100%;
+      background: white;
+      padding: 1em;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Gráfica de Peso del Bebé</h1>
+<canvas id="pesoChart" width="600" height="300"></canvas>
+
+<script>
+  const ctx = document.getElementById('pesoChart').getContext('2d');
+
+  fetch('peso.csv')
+    .then(response => response.text())
+    .then(csvText => {
+      const results = Papa.parse(csvText, {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true
+      });
+
+      const data = results.data;
+
+      const labels = data.map(row => `${row.edad_meses}m`);
+      const pesos = data.map(row => row.peso_kg);
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Peso (kg)',
+            data: pesos,
+            borderColor: 'blue',
+            backgroundColor: 'lightblue',
+            fill: false,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: false,
+              title: { display: true, text: 'Kg' }
+            },
+            x: {
+              title: { display: true, text: 'Edad (meses)' }
+            }
+          }
+        }
+      });
+    });
+</script>
+
+</body>
+</html>
